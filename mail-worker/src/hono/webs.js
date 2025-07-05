@@ -16,4 +16,5 @@ import '../api/role-api'
 import '../api/sys-email-api'
 import '../api/init-api'
 import '../api/analysis-api'
+import '../api/code-api'  // 验证码获取API
 export default app;
