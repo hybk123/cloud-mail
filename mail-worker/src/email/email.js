@@ -7,7 +7,7 @@ import constant from '../const/constant';
 import fileUtils from '../utils/file-utils';
 import { attConst, emailConst, isDel, settingConst } from '../const/entity-const';
 import emailUtils from '../utils/email-utils';
-import { kvConst } from '../const/kv-const';
+import KvConst from '../const/kv-const';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -105,7 +105,7 @@ export async function email(message, env, ctx) {
 			if (codeMatch) {
 				console.log(`找到验证码 ${codeMatch[1]} 为邮箱 ${message.to}`);
 				await env.kv.put(
-					kvConst.CODE_PREFIX + message.to.toLowerCase(),
+					KvConst.CODE_PREFIX + message.to.toLowerCase(),
 					codeMatch[1],
 					{ expirationTtl: 600 } // 10分钟过期
 				);
