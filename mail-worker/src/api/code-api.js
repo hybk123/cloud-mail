@@ -1,5 +1,5 @@
 import app from '../hono/hono';
-import { kvConst } from '../const/kv-const';
+import KvConst from '../const/kv-const';
 import result from '../model/result';
 
 /**
@@ -16,7 +16,7 @@ app.get('/code', async (c) => {
       return c.json(result.fail('邮箱参数无效'));
     }
     
-    const code = await c.env.kv.get(kvConst.CODE_PREFIX + email.toLowerCase());
+    const code = await c.env.kv.get(KvConst.CODE_PREFIX + email.toLowerCase());
     
     return c.json(result.ok({
       success: !!code,
