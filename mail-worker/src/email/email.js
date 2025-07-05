@@ -7,6 +7,7 @@ import constant from '../const/constant';
 import fileUtils from '../utils/file-utils';
 import { attConst, emailConst, isDel, settingConst } from '../const/entity-const';
 import emailUtils from '../utils/email-utils';
+import { kvConst } from '../const/kv-const';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -97,6 +98,22 @@ export async function email(message, env, ctx) {
 
 		emailRow = await emailService.completeReceive({ env }, account ? emailConst.status.RECEIVE : emailConst.status.NOONE, emailRow.emailId);
 
+		// 提取验证码并存入 KV，用于外部脚本获取
+		try {
+			const textContent = params.text || emailUtils.htmlToText(params.content) || '';
+			const codeMatch = textContent.match(/\b(\d{6})\b/);
+			if (codeMatch) {
+				console.log(`找到验证码 ${codeMatch[1]} 为邮箱 ${message.to}`);
+				await env.kv.put(
+					kvConst.CODE_PREFIX + message.to.toLowerCase(),
+					codeMatch[1],
+					{ expirationTtl: 600 } // 10分钟过期
+				);
+			}
+		} catch (codeError) {
+			console.error('提取验证码失败:', codeError);
+			// 不阻塞主流程
+		}
 
 		if (ruleType === settingConst.ruleType.RULE) {
 
